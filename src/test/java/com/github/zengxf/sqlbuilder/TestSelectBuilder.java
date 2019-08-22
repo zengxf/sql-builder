@@ -2,7 +2,6 @@ package com.github.zengxf.sqlbuilder;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
-import org.springframework.data.domain.Sort;
 
 /**
  * Created by zengxf on 2019/8/22.
@@ -12,7 +11,7 @@ public class TestSelectBuilder {
 
     @Test
     public void testSimplest() {
-        SelectSql build = SelectBuilder.of()
+        SqlResult build = SelectBuilder.of()
                 .table("user")
                 .build();
         log.info("sql: \n{}", build.getSql());
@@ -21,7 +20,7 @@ public class TestSelectBuilder {
 
     @Test
     public void testField() {
-        SelectSql build = SelectBuilder.of()
+        SqlResult build = SelectBuilder.of()
                 .addField("user_id")
                 .addField("user_name", "name")
                 .addField("user_name", "name_1")
@@ -35,7 +34,7 @@ public class TestSelectBuilder {
 
     @Test
     public void testPage() {
-        SelectSql build = SelectBuilder.of()
+        SqlResult build = SelectBuilder.of()
                 .table("user")
                 .page(10, 10)
                 .build();
@@ -45,9 +44,9 @@ public class TestSelectBuilder {
 
     @Test
     public void testSort() {
-        SelectSql build = SelectBuilder.of()
+        SqlResult build = SelectBuilder.of()
                 .table("user")
-                .addSort(new Sort(Sort.Direction.DESC, "create_date"))
+                .setSort(DbSort.of().desc("create_date"))
                 .page(1, 10)
                 .build();
         log.info("sql: \n{}", build.getSql());
@@ -56,7 +55,7 @@ public class TestSelectBuilder {
 
     @Test
     public void testWhere() {
-        SelectSql build = SelectBuilder.of()
+        SqlResult build = SelectBuilder.of()
                 .table("user")
                 .where(DbCriteriaGroup.ofAnd()
                         .addItem(DbCriteria.of("id", DbCriteriaType.EQ, 10))
@@ -70,7 +69,7 @@ public class TestSelectBuilder {
 
     @Test
     public void testGroup() {
-        SelectSql build = SelectBuilder.of()
+        SqlResult build = SelectBuilder.of()
                 .table("user")
                 .addField("user_name", "name")
                 .addField("user_age")
@@ -89,7 +88,7 @@ public class TestSelectBuilder {
 
     @Test
     public void testWhereGroup() {
-        SelectSql build = SelectBuilder.of()
+        SqlResult build = SelectBuilder.of()
                 .table("user")
                 .where(DbCriteriaGroup.ofAnd()
                         .addItem(DbCriteria.of("id", DbCriteriaType.EQ, 10))

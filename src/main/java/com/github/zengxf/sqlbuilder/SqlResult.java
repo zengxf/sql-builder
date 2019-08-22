@@ -10,9 +10,9 @@ import java.util.Map;
  */
 @Getter
 @AllArgsConstructor
-public class SelectSql {
+public class SqlResult {
 
-    private String sql;
-    private Map<String, Object> param;
+    public final String sql;
+    public final Map<String, Object> param;
 
 }

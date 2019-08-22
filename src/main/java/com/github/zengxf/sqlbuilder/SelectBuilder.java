@@ -3,7 +3,6 @@ package com.github.zengxf.sqlbuilder;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Sort;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -26,7 +25,7 @@ public class SelectBuilder implements SqlConstant {
     private Set<DbField> fields = new LinkedHashSet<>();
     private DbCriteriaGroup where;
     private Set<String> groups = new LinkedHashSet<>();
-    private Sort sort;
+    private DbSort sort;
     private Integer pageIndex;
     private Integer pageSize;
 
@@ -69,13 +68,10 @@ public class SelectBuilder implements SqlConstant {
         return this;
     }
 
-    public SelectBuilder addSort(Sort sort) {
-        if (sort == null || sort.isUnsorted())
+    public SelectBuilder setSort(DbSort sort) {
+        if (sort == null || sort.isEmpty())
             throw SqlBuildException.of("排序没有指定");
-        if (this.sort == null)
-            this.sort = sort;
-        else
-            this.sort = this.sort.and(sort);
+        this.sort = sort;
         return this;
     }
 
@@ -106,7 +102,7 @@ public class SelectBuilder implements SqlConstant {
         return this;
     }
 
-    public SelectSql build() {
+    public SqlResult build() {
         Map<String, Object> param = new LinkedHashMap<>();
 
         StringBuilder sql = new StringBuilder(100);
@@ -120,7 +116,7 @@ public class SelectBuilder implements SqlConstant {
 
         log.debug("build-sql: \n{}", sql);
         log.debug("build-param: {}", param);
-        return new SelectSql(sql.toString(), param);
+        return new SqlResult(sql.toString(), param);
     }
 
     private void appendField(StringBuilder sql) {
@@ -149,14 +145,6 @@ public class SelectBuilder implements SqlConstant {
         }
     }
 
-    private void appendPage(Map<String, Object> param, StringBuilder sql) {
-        if (pageSize != null) {
-            sql.append("LIMIT :pageStart, :pageSize");
-            param.put("pageStart", this.pageIndex() * this.validatePageSize());
-            param.put("pageSize", this.validatePageSize());
-        }
-    }
-
     private void appendSort(StringBuilder sql) {
         if (sort != null) {
             String temp = sort.get()
@@ -164,6 +152,14 @@ public class SelectBuilder implements SqlConstant {
                             String.format("%s %s", order.getProperty(), order.getDirection())
                     ).collect(Collectors.joining(", "));
             sql.append("ORDER BY ").append(temp).append(BR);
+        }
+    }
+
+    private void appendPage(Map<String, Object> param, StringBuilder sql) {
+        if (pageSize != null) {
+            sql.append("LIMIT :pageStart, :pageSize");
+            param.put("pageStart", this.pageIndex() * this.validatePageSize());
+            param.put("pageSize", this.validatePageSize());
         }
     }
 
