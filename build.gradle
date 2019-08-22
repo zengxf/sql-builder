@@ -3,17 +3,21 @@ plugins {
     id 'idea'
     id "io.freefair.lombok" version "3.1.0"
 }
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 sourceCompatibility = 11
 compileJava.options.encoding = 'UTF-8'
+group = 'com.github.zengxf'
+version = '0.1.0'
 
 repositories {
     mavenCentral()
     maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
 }
-
-dependencies { 
-	// utils
+dependencies {
+    // utils
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     // logging
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.28'
@@ -29,4 +33,60 @@ idea {
     module {
         inheritOutputDirs = true
     }
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier = 'sources'
+}
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
+publishing { // 定义发布
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            pom {
+                name = 'SQL Builder' // 构件名称，区别于 artifactId，可以理解为 artifactName
+                description = 'SQL Builder for NamedParameterJdbcTemplate' // 构件描述
+                url = 'https://www.jjnote.cn' // 构件主页
+                licenses { // 许可证名称和地址
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {  // 开发者信息
+                    developer {
+                        name = 'zengxf'
+                        email = 'fl_zxf@sina.cn'
+                    }
+                }
+                scm { // 版本控制仓库地址
+                    url = 'https://github.com/zengxf/sql-builder'
+                    connection = 'scm:https://github.com/zengxf/sql-builder.git'
+                    developerConnection = 'scm:https://github.com/zengxf/sql-builder.git'
+                }
+            }
+        }
+    }
+    repositories { // 定义发布到哪里
+        maven {
+            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            credentials { // sonatype 账号
+                username sonatypeUsername
+                password sonatypePassword
+            }
+        }
+    }
+}
+signing {
+    sign publishing.publications.mavenJava
+}
+javadoc {
+    // 防止本地打开中文乱码，添加 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    options.addStringOption("charset", "UTF-8")
 }

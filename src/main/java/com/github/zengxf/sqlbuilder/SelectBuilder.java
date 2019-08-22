@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
+ * SELECT 语句构造器
+ * <p>
  * Created by zengxf on 2019/8/1.
  */
 @Slf4j
