@@ -20,3 +20,13 @@
 ### 找不到相关按钮
 - 在 https://oss.sonatype.org 找不到，是因为没登录
 - 点击 `Log In` 登录即可
+
+## gradle.properties 示例
+```
+sonatypeUsername=u
+sonatypePassword=p
+
+signing.keyId=0026AA85
+signing.password=xx
+signing.secretKeyRingFile=L:/key/secret.gpg
+```
