@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id "io.freefair.lombok" version "3.1.0"
+}
+
+sourceCompatibility = 11
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+    maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+}
+
+dependencies { 
+	// utils
+	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.3'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    // lombok
+    compileOnly 'org.projectlombok:lombok:1.18.8'
+    testCompile 'org.projectlombok:lombok:1.18.8'
+    // test
+    testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    testCompile group: 'io.projectreactor', name: 'reactor-test'
+}
+
+idea {
+    module {
+        inheritOutputDirs = true
+    }
+}
