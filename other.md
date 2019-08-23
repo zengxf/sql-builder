@@ -3,6 +3,7 @@
 - 发布测试 `gradle publishToMavenLocal`
   - `*.pom` 文件不会生成在 `libs` 下面
   - `*-javadoc.jar` 里面是空的
+  - 在 `~/.m2/repository/com/github/zengxf/sql-builder` 下面有
 - 正式发布 `gradle publish`
 
 
