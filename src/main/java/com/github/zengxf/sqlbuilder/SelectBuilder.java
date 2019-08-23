@@ -17,30 +17,18 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @NoArgsConstructor(staticName = "of")
-public class SelectBuilder implements SqlConstant {
+public class SelectBuilder extends AbstractBuilder {
 
-    private static final String
-            BR = "\n",
-            TR = "  ";
-
-    private String table;
     private Set<DbField> fields = new LinkedHashSet<>();
-    private DbCriteriaGroup where;
     private Set<String> groups = new LinkedHashSet<>();
     private DbSort sort;
     private Integer pageIndex;
     private Integer pageSize;
 
-    public SelectBuilder table(String table) {
-        this.table = table;
-        this.validateTable();
-        return this;
-    }
 
-    private String validateTable() {
-        if (StringUtils.isEmpty(table))
-            throw SqlBuildException.of("表名不能为空");
-        return table;
+    public SelectBuilder table(String table) {
+        super.setTable(table);
+        return this;
     }
 
     public SelectBuilder addField(String field) {
@@ -58,6 +46,11 @@ public class SelectBuilder implements SqlConstant {
         return this;
     }
 
+    public SelectBuilder addJoin(DbJoin join) {
+        super.putJoin(join);
+        return this;
+    }
+
     public SelectBuilder addGroup(String group) {
         if (StringUtils.isEmpty(group))
             throw SqlBuildException.of("分组字段为空");
@@ -70,12 +63,32 @@ public class SelectBuilder implements SqlConstant {
         return this;
     }
 
+    /*** 逻辑运算符默认用 AND */
+    public SelectBuilder where(DbCriteria... items) {
+        this.where = DbCriteriaGroup.ofAnd(items);
+        return this;
+    }
+
     public SelectBuilder setSort(DbSort sort) {
         if (sort == null || sort.isEmpty())
             throw SqlBuildException.of("排序没有指定");
         this.sort = sort;
         return this;
     }
+
+    /*** 只复制表名和条件 */
+    public SelectBuilder copy() {
+        return SelectBuilder.of()
+                .table(table)
+                .where(where);
+    }
+
+    /*** 只复制表名和条件 */
+    public SelectBuilder copyForCount() {
+        return this.copy()
+                .addField(DbField.ofCount());
+    }
+
 
     private int pageIndex() {
         if (pageIndex == null) {
@@ -104,14 +117,17 @@ public class SelectBuilder implements SqlConstant {
         return this;
     }
 
+
+    @Override
     public SqlResult build() {
         Map<String, Object> param = new LinkedHashMap<>();
-
         StringBuilder sql = new StringBuilder(100);
+
         sql.append("SELECT").append(BR);
         this.appendField(sql);
-        sql.append("FROM ").append(this.validateTable()).append(BR);
-        this.appendWhere(param, sql);
+        sql.append("FROM ").append(super.validateTable()).append(BR);
+        this.appendJoin(SELECT_JOIN_SIGN, param, sql);
+        super.appendWhere(SELECT_WHERE_SIGN, param, sql);
         this.appendGroup(sql);
         this.appendSort(sql);
         this.appendPage(param, sql);
@@ -120,6 +136,7 @@ public class SelectBuilder implements SqlConstant {
         log.debug("build-param: {}", param);
         return new SqlResult(sql.toString(), param);
     }
+
 
     private void appendField(StringBuilder sql) {
         if (fields.isEmpty()) {
@@ -131,38 +148,30 @@ public class SelectBuilder implements SqlConstant {
         }
     }
 
-    private void appendWhere(Map<String, Object> param, StringBuilder sql) {
-        if (where != null) {
-            sql.append(TR).append("WHERE ");
-            String temp = where.toSql(SELECT_WHERE_SIGN, param);
-            sql.append(temp).append(BR);
-        }
-    }
-
     private void appendGroup(StringBuilder sql) {
-        if (!groups.isEmpty()) {
-            sql.append(TR).append("GROUP BY ");
-            String temp = groups.stream().collect(Collectors.joining(", "));
-            sql.append(temp).append(BR);
-        }
+        if (groups.isEmpty())
+            return;
+        sql.append(TR).append("GROUP BY ");
+        String temp = groups.stream().collect(Collectors.joining(", "));
+        sql.append(temp).append(BR);
     }
 
     private void appendSort(StringBuilder sql) {
-        if (sort != null) {
-            String temp = sort.get()
-                    .map(order ->
-                            String.format("%s %s", order.getProperty(), order.getDirection())
-                    ).collect(Collectors.joining(", "));
-            sql.append("ORDER BY ").append(temp).append(BR);
-        }
+        if (sort == null)
+            return;
+        String temp = sort.get()
+                .map(order ->
+                        String.format("%s %s", order.getProperty(), order.getDirection())
+                ).collect(Collectors.joining(", "));
+        sql.append("ORDER BY ").append(temp).append(BR);
     }
 
     private void appendPage(Map<String, Object> param, StringBuilder sql) {
-        if (pageSize != null) {
-            sql.append("LIMIT :pageStart, :pageSize");
-            param.put("pageStart", this.pageIndex() * this.validatePageSize());
-            param.put("pageSize", this.validatePageSize());
-        }
+        if (pageSize == null)
+            return;
+        sql.append("LIMIT :pageStart, :pageSize");
+        param.put("pageStart", this.pageIndex() * this.validatePageSize());
+        param.put("pageSize", this.validatePageSize());
     }
 
 }

@@ -20,6 +20,12 @@
 ### 找不到相关按钮
 - 在 https://oss.sonatype.org 找不到，是因为没登录
 - 点击 `Log In` 登录即可
+- 如果 **Release** 失败，看提示，看 `Content`，可能文件没上传完整
+  - 再发布一次就好了
+
+## Maven 中心查看
+- 搜索：https://search.maven.org/search?q=sql-builder
+- 文件：https://repo1.maven.org/maven2/com/github/zengxf/sql-builder
 
 ## gradle.properties 示例
 ```

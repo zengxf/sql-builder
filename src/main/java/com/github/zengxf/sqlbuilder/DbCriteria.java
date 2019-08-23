@@ -11,9 +11,18 @@ public class DbCriteria {
 
     private String field;
     private DbCriteriaType type;
+    private boolean literal;
     private Object[] params;
 
     public static DbCriteria of(String field, DbCriteriaType type, Object... params) {
+        return of(field, type, false, params);
+    }
+
+    public static DbCriteria ofLiteral(String field, DbCriteriaType type, Object... params) {
+        return of(field, type, true, params);
+    }
+
+    private static DbCriteria of(String field, DbCriteriaType type, boolean literal, Object... params) {
         if (StringUtils.isEmpty(field))
             throw SqlBuildException.of("字段不能为空");
         if (type == null)
@@ -24,6 +33,7 @@ public class DbCriteria {
         DbCriteria criteria = new DbCriteria();
         criteria.field = field;
         criteria.type = type;
+        criteria.literal = literal;
         criteria.params = params;
 
         return criteria;

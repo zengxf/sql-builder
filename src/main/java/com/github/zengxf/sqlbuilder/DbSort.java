@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 /**
  * Created by zengxf on 2019/8/22.
  */
+@Getter
 @NoArgsConstructor(staticName = "of")
 public class DbSort {
 
@@ -45,8 +46,8 @@ public class DbSort {
     @ToString
     @AllArgsConstructor
     public static class Order {
-        private final Direction direction;
-        private final String property;
+        public final Direction direction;
+        public final String property;
     }
 
 

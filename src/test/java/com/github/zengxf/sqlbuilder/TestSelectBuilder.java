@@ -54,6 +54,25 @@ public class TestSelectBuilder {
     }
 
     @Test
+    public void testCopy() {
+        SelectBuilder builder = SelectBuilder.of()
+                .table("user")
+                .addField("user_name", "name")
+                .addField("user_age")
+                .where(DbCriteria.of("id", DbCriteriaType.EQ, 10))
+                .setSort(DbSort.of().desc("create_date"))
+                .page(1, 10);
+
+        SqlResult build = builder.build();
+        log.info("list-sql: \n{}", build.getSql());
+        log.info("list-param: {}", build.getParam());
+
+        build = builder.copyForCount().build();
+        log.info("count-sql: \n{}", build.getSql());
+        log.info("count-param: {}", build.getParam());
+    }
+
+    @Test
     public void testWhere() {
         SqlResult build = SelectBuilder.of()
                 .table("user")
@@ -105,6 +124,22 @@ public class TestSelectBuilder {
                                 .addItem(DbCriteria.of("six", DbCriteriaType.IS_NULL))
                         )
                 )
+                .build();
+        log.info("sql: \n{}", build.getSql());
+        log.info("param: {}", build.getParam());
+    }
+
+    @Test
+    public void testJoin() {
+        SqlResult build = SelectBuilder.of()
+                .table("user u")
+                .addField("u.name")
+                .addField("o.date")
+                .addJoin(DbJoin.left("order o", DbCriteriaGroup.ofAnd(
+                        DbCriteria.ofLiteral("o.uid", DbCriteriaType.EQ, "u.id"),
+                        DbCriteria.of("o.status", DbCriteriaType.EQ, 1)
+                )))
+                .where(DbCriteria.of("u.id", DbCriteriaType.EQ, 10))
                 .build();
         log.info("sql: \n{}", build.getSql());
         log.info("param: {}", build.getParam());

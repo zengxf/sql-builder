@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.github.zengxf.sqlbuilder.DbCriteriaGroup.RelationType.NOT;
 import static com.github.zengxf.sqlbuilder.DbCriteriaGroup.RelationType.OR;
@@ -16,27 +17,34 @@ import static com.github.zengxf.sqlbuilder.DbCriteriaGroup.RelationType.OR;
  * Created by zengxf on 2019/8/1.
  */
 @Getter
-public class DbCriteriaGroup {
+public class DbCriteriaGroup implements SqlConstant {
 
     private AtomicInteger sign;
     private RelationType type;
     private Set<DbCriteria> items = new LinkedHashSet<>(4);
     private Set<DbCriteriaGroup> groups = new LinkedHashSet<>(2);
 
-    enum RelationType {
+    public enum RelationType {
         AND, OR, NOT
     }
 
-    public static DbCriteriaGroup ofAnd() {
-        return of(RelationType.AND);
+
+    public static DbCriteriaGroup ofAnd(DbCriteria... items) {
+        DbCriteriaGroup group = of(RelationType.AND);
+        Stream.of(items).forEach(group::addItem);
+        return group;
     }
 
-    public static DbCriteriaGroup ofOr() {
-        return of(RelationType.OR);
+    public static DbCriteriaGroup ofOr(DbCriteria... items) {
+        DbCriteriaGroup group = of(RelationType.OR);
+        Stream.of(items).forEach(group::addItem);
+        return group;
     }
 
-    public static DbCriteriaGroup ofNot() {
-        return of(RelationType.NOT);
+    public static DbCriteriaGroup ofNot(DbCriteria... items) {
+        DbCriteriaGroup group = of(RelationType.NOT);
+        Stream.of(items).forEach(group::addItem);
+        return group;
     }
 
     private static DbCriteriaGroup of(RelationType type) {
@@ -44,6 +52,7 @@ public class DbCriteriaGroup {
         group.type = type;
         return group;
     }
+
 
     public DbCriteriaGroup addItem(DbCriteria item) {
         this.items.add(item);
@@ -53,6 +62,10 @@ public class DbCriteriaGroup {
     public DbCriteriaGroup addGroup(DbCriteriaGroup group) {
         this.groups.add(group);
         return this;
+    }
+
+    public boolean isEmpty() {
+        return items.isEmpty() && groups.isEmpty();
     }
 
     String toSql(int sign, Map<String, Object> param) {
@@ -68,16 +81,25 @@ public class DbCriteriaGroup {
                     String field = cri.getField();
                     DbCriteriaType type = cri.getType();
                     String operator = type.operator;
+                    boolean literal = cri.isLiteral();
+                    Object[] params = cri.getParams();
                     if (type.params == 1) {
-                        String key = String.format("%s_%s", field, sign);
-                        param.put(key, cri.getParams()[0]);
-                        operator = String.format(operator, ":" + key);
+                        String key = params[0].toString();
+                        if (!literal) {
+                            key = ":" + String.format("%s_%s", field, sign);
+                            param.put(key, params[0]);
+                        }
+                        operator = String.format(operator, key);
                     } else if (type.params == 2) {
-                        String key1 = String.format("%s_%s_1", field, sign);
-                        param.put(key1, cri.getParams()[0]);
-                        String key2 = String.format("%s_%s_2", field, sign);
-                        param.put(key2, cri.getParams()[1]);
-                        operator = String.format(operator, ":" + key1, ":" + key2);
+                        String key1 = params[0].toString();
+                        String key2 = params[1].toString();
+                        if (!literal) {
+                            key1 = ":" + String.format("%s_%s_1", field, sign);
+                            param.put(key1, params[0]);
+                            key2 = ":" + String.format("%s_%s_2", field, sign);
+                            param.put(key2, params[1]);
+                        }
+                        operator = String.format(operator, key1, key2);
                     }
                     return field + " " + operator;
                 })
@@ -86,7 +108,7 @@ public class DbCriteriaGroup {
         group.getGroups().stream()
                 .map(childGroup -> {
                     sign.addAndGet(10);
-                    return this.toSql(childGroup, param);
+                    return BR + TR + TR + this.toSql(childGroup, param);
                 })
                 .forEach(relationList::add);
 

@@ -6,6 +6,13 @@ package com.github.zengxf.sqlbuilder;
 public interface SqlConstant {
 
     int
-            SELECT_WHERE_SIGN = 1000;
+            SELECT_WHERE_SIGN = 1000,
+            SELECT_JOIN_SIGN = 2000,
+            UPDATE_WHERE_SIGN = 5000,
+            UPDATE_JOIN_SIGN = 6000;
+
+    String
+            BR = "\n",
+            TR = "  ";
 
 }
