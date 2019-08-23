@@ -12,8 +12,10 @@ bin
 build
 
 lombok.config
+zxf-ossql-builderbuilddelombokmain
 
 .idea
 out
 classes
 logs
+
