@@ -21,7 +21,7 @@ public class TestSelectBuilder {
     @Test
     public void testField() {
         SqlResult build = SelectBuilder.of()
-                .addField("user_id")
+                .addFields("user_id", "status")
                 .addField("user_name", "name")
                 .addField("user_name", "name_1")
                 .addField(DbField.ofCount())
