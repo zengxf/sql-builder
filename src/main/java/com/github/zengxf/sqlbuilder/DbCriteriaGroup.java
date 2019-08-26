@@ -86,18 +86,21 @@ public class DbCriteriaGroup implements SqlConstant {
                     if (type.params == 1) {
                         String key = params[0].toString();
                         if (!literal) {
-                            key = ":" + String.format("%s_%s", field, sign);
-                            param.put(key, params[0]);
+                            String _key = String.format("%s_%s", field, sign);
+                            key = ":" + _key;
+                            param.put(_key, params[0]);
                         }
                         operator = String.format(operator, key);
                     } else if (type.params == 2) {
                         String key1 = params[0].toString();
                         String key2 = params[1].toString();
                         if (!literal) {
-                            key1 = ":" + String.format("%s_%s_1", field, sign);
-                            param.put(key1, params[0]);
-                            key2 = ":" + String.format("%s_%s_2", field, sign);
-                            param.put(key2, params[1]);
+                            String _key1 = String.format("%s_%s_1", field, sign);
+                            String _key2 = String.format("%s_%s_2", field, sign);
+                            key1 = ":" + _key1;
+                            key2 = ":" + _key2;
+                            param.put(_key1, params[0]);
+                            param.put(_key2, params[1]);
                         }
                         operator = String.format(operator, key1, key2);
                     }

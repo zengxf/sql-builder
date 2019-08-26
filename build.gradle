@@ -3,14 +3,13 @@ plugins {
     id 'idea'
     id "io.freefair.lombok" version "3.1.0"
 }
-//apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
 sourceCompatibility = 11
 compileJava.options.encoding = 'UTF-8'
 group = 'com.github.zengxf'
-version = '0.2.0'
+version = '0.3.0'
 
 repositories {
     mavenCentral()
