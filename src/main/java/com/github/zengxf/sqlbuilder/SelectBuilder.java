@@ -9,6 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * SELECT 语句构造器
@@ -28,6 +29,11 @@ public class SelectBuilder extends AbstractBuilder {
 
     public SelectBuilder table(String table) {
         super.setTable(table);
+        return this;
+    }
+
+    public SelectBuilder addFields(String... fields) {
+        Stream.of(fields).forEach(this::addField);
         return this;
     }
 

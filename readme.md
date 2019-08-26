@@ -44,22 +44,22 @@ log.info("count-param: {}", build.getParam());
 ```
 - 输出
 ```
-[main] INFO com.github.zengxf.sqlbuilder.TestSelectBuilder - list-sql: 
+[main] INFO TestSelectBuilder - list-sql: 
 SELECT
   user_name AS `name`, user_age
 FROM user
   WHERE (id = :id_1000)
 ORDER BY create_date DESC
-LIMIT :pageStart, :pageSize
-[main] INFO com.github.zengxf.sqlbuilder.TestSelectBuilder - list-param: {:id_1000=10, pageStart=10, pageSize=10}
+LIMIT :pageStart, pageSize
+[main] INFO TestSelectBuilder - list-param: {id_1000=10, pageStart=10, pageSize=10}
 
-[main] INFO com.github.zengxf.sqlbuilder.TestSelectBuilder - count-sql: 
+[main] INFO TestSelectBuilder - count-sql: 
 SELECT
   COUNT(*)
 FROM user
   WHERE (id = :id_1000)
 
-[main] INFO com.github.zengxf.sqlbuilder.TestSelectBuilder - count-param: {:id_1000=10}
+[main] INFO TestSelectBuilder - count-param: {id_1000=10}
 ```
 
 #### 02 WHERE
@@ -88,8 +88,8 @@ log.info("param: {}", build.getParam());
 ```
 - 输出
 ```
-[main] WARN com.github.zengxf.sqlbuilder.SelectBuilder - 没有指定字段，默认将使用 `*`
-[main] INFO com.github.zengxf.sqlbuilder.TestSelectBuilder - sql: 
+[main] WARN SelectBuilder - 没有指定字段，默认将使用 `*`
+[main] INFO TestSelectBuilder - sql: 
 SELECT
   *
 FROM user
@@ -97,7 +97,7 @@ FROM user
     (age BETWEEN :age_1010_1 AND :age_1010_2 OR state = :state_1010 OR six IS NULL) AND 
     !(age BETWEEN :age_1020_1 AND :age_1020_2 AND state = :state_1020 AND six IS NULL))
 
-[main] INFO com.github.zengxf.sqlbuilder.TestSelectBuilder - param: {:id_1000=10, :name_1000=zxf, :age_1010_1=18, :age_1010_2=28, :state_1010=active, :age_1020_1=18, :age_1020_2=28, :state_1020=active}
+[main] INFO TestSelectBuilder - param: {id_1000=10, name_1000=zxf, age_1010_1=18, age_1010_2=28, state_1010=active, age_1020_1=18, age_1020_2=28, state_1020=active}
 ```
 
 #### 03 JOIN
@@ -118,14 +118,14 @@ log.info("param: {}", build.getParam());
 ```
 - 输出
 ```
-[main] INFO com.github.zengxf.sqlbuilder.TestSelectBuilder - sql: 
+[main] INFO TestSelectBuilder - sql: 
 SELECT
   u.name, o.date
 FROM user u
   LEFT JOIN order o ON (o.uid = u.id AND o.status = :o.status_2000)
   WHERE (u.id = :u.id_1000)
 
-[main] INFO com.github.zengxf.sqlbuilder.TestSelectBuilder - param: {:o.status_2000=1, :u.id_1000=10}
+[main] INFO TestSelectBuilder - param: {o.status_2000=1, u.id_1000=10}
 ```
 
 ### UPDATE
@@ -142,11 +142,11 @@ log.info("param: {}", build.getParam());
 ```
 - 输出
 ```
-[main] INFO com.github.zengxf.sqlbuilder.TestUpdateBuilder - sql: 
+[main] INFO TestUpdateBuilder - sql: 
 UPDATE user
   SET status = :status, age = age + 1
 
-[main] INFO com.github.zengxf.sqlbuilder.TestUpdateBuilder - param: {status=1}
+[main] INFO TestUpdateBuilder - param: {status=1}
 ```
 
 #### 02 WHERE
@@ -166,12 +166,12 @@ log.info("param: {}", build.getParam());
 ```
 - 输出
 ```
-[main] INFO com.github.zengxf.sqlbuilder.TestUpdateBuilder - sql: 
+[main] INFO TestUpdateBuilder - sql: 
 UPDATE user
   SET status = :status, age = age + 1
   WHERE (id = :id_5000 AND name LIKE '%' :name_5000 '%')
 
-[main] INFO com.github.zengxf.sqlbuilder.TestUpdateBuilder - param: {status=1, :id_5000=10, :name_5000=test}
+[main] INFO TestUpdateBuilder - param: {status=1, id_5000=10, name_5000=test}
 ```
 
 #### 03 JOIN
@@ -195,11 +195,11 @@ log.info("param: {}", build.getParam());
 ```
 - 输出
 ```
-[main] INFO com.github.zengxf.sqlbuilder.TestUpdateBuilder - sql: 
+[main] INFO TestUpdateBuilder - sql: 
 UPDATE user u
   LEFT JOIN order o ON (o.uid = u.id AND o.status = :o.status_6000)
   SET u.status = :u.status, u.age = age + 1
   WHERE (u.id = :u.id_5000 AND u.name LIKE '%' :u.name_5000 '%')
 
-[main] INFO com.github.zengxf.sqlbuilder.TestUpdateBuilder - param: {:o.status_6000=1, u.status=1, :u.id_5000=10, :u.name_5000=test}
+[main] INFO TestUpdateBuilder - param: {o.status_6000=1, u.status=1, u.id_5000=10, u.name_5000=test}
 ```
