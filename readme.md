@@ -203,3 +203,9 @@ UPDATE user u
 
 [main] INFO TestUpdateBuilder - param: {o.status_6000=1, u.status=1, u.id_5000=10, u.name_5000=test}
 ```
+
+## TODO
+- [ ] DELETE
+- [ ] SELECT - `WITH AS`
+- [ ] JOIN 子查询
+- [ ] JOIN 死循环嵌套检查
