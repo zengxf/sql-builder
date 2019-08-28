@@ -82,14 +82,16 @@ public class SelectBuilder extends AbstractBuilder {
         return this;
     }
 
-    /*** 只复制表名和条件 */
+    /*** 只复制表名、连接和条件 */
     public SelectBuilder copy() {
-        return SelectBuilder.of()
+        SelectBuilder copy = SelectBuilder.of()
                 .table(table)
-                .where(where);
+                .where(this.where);
+        this.joins.forEach(copy::addJoin);
+        return copy;
     }
 
-    /*** 只复制表名和条件 */
+    /*** 只复制表名、连接和条件 */
     public SelectBuilder copyForCount() {
         return this.copy()
                 .addField(DbField.ofCount());
