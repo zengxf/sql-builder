@@ -9,7 +9,7 @@ apply plugin: 'signing'
 sourceCompatibility = 11
 compileJava.options.encoding = 'UTF-8'
 group = 'com.github.zengxf'
-version = '0.3.0'
+version = '0.4.0'
 
 repositories {
     mavenCentral()
@@ -50,8 +50,8 @@ publishing { // 定义发布
             artifact javadocJar
             pom {
                 name = 'SQL Builder' // 构件名称，区别于 artifactId，可以理解为 artifactName
-                description = 'SQL Builder for NamedParameterJdbcTemplate' // 构件描述
-                url = 'https://www.jjnote.cn' // 构件主页
+                description = 'SQL Builder for NamedParameterJdbcTemplate of Spring-JDBC' // 构件描述
+                url = 'https://github.com/zengxf/sql-builder' // 构件主页
                 licenses { // 许可证名称和地址
                     license {
                         name = 'The Apache License, Version 2.0'

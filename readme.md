@@ -97,7 +97,8 @@ FROM user
     (age BETWEEN :age_1010_1 AND :age_1010_2 OR state = :state_1010 OR six IS NULL) AND 
     !(age BETWEEN :age_1020_1 AND :age_1020_2 AND state = :state_1020 AND six IS NULL))
 
-[main] INFO TestSelectBuilder - param: {id_1000=10, name_1000=zxf, age_1010_1=18, age_1010_2=28, state_1010=active, age_1020_1=18, age_1020_2=28, state_1020=active}
+[main] INFO TestSelectBuilder - param: {id_1000=10, name_1000=zxf, age_1010_1=18, age_1010_2=28, state_1010=active, 
+    age_1020_1=18, age_1020_2=28, state_1020=active}
 ```
 
 #### 03 JOIN
@@ -204,8 +205,65 @@ UPDATE user u
 [main] INFO TestUpdateBuilder - param: {o.status_6000=1, u.status=1, u.id_5000=10, u.name_5000=test}
 ```
 
+
+### DELETE
+#### 01 Simple
+- Java Code
+```
+SqlResult build = DeleteBuilder.of()
+        .table("user")
+        .where(DbCriteriaGroup.ofAnd()
+                .addItem(DbCriteria.of("id", DbCriteriaType.EQ, 10))
+                .addItem(DbCriteria.of("name", DbCriteriaType.LIKE, "test"))
+        )
+        .build();
+log.info("sql: \n{}", build.getSql());
+log.info("param: {}", build.getParam());
+```
+- 输出
+```
+[main] INFO TestDeleteBuilder - sql: 
+DELETE FROM user
+  WHERE (id = :id_7000 AND name LIKE '%' :name_7000 '%')
+
+[main] INFO TestDeleteBuilder - param: {id_7000=10, name_7000=test}
+```
+
+#### 02 JOIN
+- Java Code
+```
+SqlResult build = DeleteBuilder.of()
+        .table("user")
+        .addDeleteTable("order")
+        .addJoin(DbJoin.left("order",
+                DbCriteria.ofLiteral("order.uid", DbCriteriaType.EQ, "user.id"),
+                DbCriteria.of("order.status", DbCriteriaType.EQ, 1)
+        ))
+        .where(DbCriteriaGroup.ofAnd()
+                .addItem(DbCriteria.of("user.id", DbCriteriaType.EQ, 10))
+                .addItem(DbCriteria.of("user.name", DbCriteriaType.LIKE, "test"))
+        )
+        .build();
+log.info("sql: \n{}", build.getSql());
+log.info("param: {}", build.getParam());
+```
+- 输出
+```
+[main] INFO TestDeleteBuilder - sql: 
+DELETE user, order
+FROM user
+  LEFT JOIN order ON (order.uid = user.id AND order.status = :order.status_8000)
+  WHERE (user.id = :user.id_7000 AND user.name LIKE '%' :user.name_7000 '%')
+
+[main] INFO TestDeleteBuilder - param: {order.status_8000=1, user.id_7000=10, user.name_7000=test}
+```
+
+
 ## TODO
-- [ ] DELETE
+- [x] DELETE
 - [ ] SELECT - `WITH AS`
 - [ ] JOIN 子查询
 - [ ] JOIN 死循环嵌套检查
+
+## 使用者
+- 1 https://www.jjnote.cn
