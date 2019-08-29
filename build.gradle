@@ -9,7 +9,7 @@ apply plugin: 'signing'
 sourceCompatibility = 11
 compileJava.options.encoding = 'UTF-8'
 group = 'com.github.zengxf'
-version = '0.4.0'
+version = '0.4.1'
 
 repositories {
     mavenCentral()
