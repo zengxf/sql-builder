@@ -11,7 +11,8 @@ public interface SqlConstant {
             UPDATE_WHERE_SIGN = 5000,
             UPDATE_JOIN_SIGN = 6000,
             DELETE_WHERE_SIGN = 7000,
-            DELETE_JOIN_SIGN = 8000;
+            DELETE_JOIN_SIGN = 8000,
+            SUB_SQL_SIGN = 10_000;
 
     String
             BR = "\n",

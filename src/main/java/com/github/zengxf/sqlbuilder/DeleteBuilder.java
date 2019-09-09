@@ -46,6 +46,8 @@ public class DeleteBuilder extends AbstractBuilder {
 
     @Override
     public SqlResult build() {
+        this.validateEmbed();
+
         Map<String, Object> param = new LinkedHashMap<>();
 
         StringBuilder sql = new StringBuilder(100);
@@ -64,6 +66,12 @@ public class DeleteBuilder extends AbstractBuilder {
         log.debug("build-sql: \n{}", sql);
         log.debug("build-param: {}", param);
         return new SqlResult(sql.toString(), param);
+    }
+
+
+    private void validateEmbed() {
+        if (where != null)
+            where.validateEmbed();
     }
 
 }

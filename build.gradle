@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'idea'
+//    id 'idea'
     id "io.freefair.lombok" version "3.1.0"
 }
 apply plugin: 'maven-publish'
@@ -9,7 +9,7 @@ apply plugin: 'signing'
 sourceCompatibility = 11
 compileJava.options.encoding = 'UTF-8'
 group = 'com.github.zengxf'
-version = '0.4.1'
+version = '0.5.0'
 
 repositories {
     mavenCentral()
@@ -28,11 +28,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-idea {
-    module {
-        inheritOutputDirs = true
-    }
-}
+//idea { module { inheritOutputDirs = true } }
 
 task sourcesJar(type: Jar) {
     from sourceSets.main.allJava

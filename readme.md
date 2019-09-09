@@ -261,6 +261,7 @@ FROM user
 
 ## TODO
 - [x] DELETE
+- [x] UNION - `UNION ALL`、`UNION` 和嵌套检查
 - [ ] SELECT - `WITH AS`
 - [ ] JOIN 子查询
 - [ ] JOIN 死循环嵌套检查

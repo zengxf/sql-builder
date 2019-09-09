@@ -2,10 +2,7 @@ package com.github.zengxf.sqlbuilder;
 
 import lombok.Getter;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -69,8 +66,27 @@ public class DbCriteriaGroup implements SqlConstant {
     }
 
     String toSql(int sign, Map<String, Object> param) {
+        this.validateEmbed();
         this.sign = new AtomicInteger(sign);
         return this.toSql(this, param);
+    }
+
+
+    void validateEmbed() {
+        Set<DbCriteriaGroup> where = new HashSet<>();
+        where.add(this);
+        this.validateEmbed(where, this.groups);
+    }
+
+    private void validateEmbed(Set<DbCriteriaGroup> exist, Set<DbCriteriaGroup> temps) {
+        if (temps == null || temps.isEmpty())
+            return;
+        temps.forEach(temp -> {
+            if (exist.contains(temp))
+                throw SqlBuildException.of("条件存在重复嵌套");
+            exist.add(temp);
+            this.validateEmbed(exist, temp.groups);
+        });
     }
 
     private String toSql(DbCriteriaGroup group, Map<String, Object> param) {

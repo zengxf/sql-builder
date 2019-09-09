@@ -144,4 +144,43 @@ public class TestSelectBuilder {
         log.info("param: {}", build.getParam());
     }
 
+    @Test
+    public void testUnion() {
+        SqlResult build = SelectBuilder.of()
+                .table("user u")
+                .addField("name")
+                .addField("date")
+                .where(DbCriteria.of("u.id", DbCriteriaType.EQ, 10))
+                .unionAll(
+                        SelectBuilder.of()
+                                .table("user2")
+                                .addField("name")
+                                .addField("date")
+                                .where(DbCriteria.of("id", DbCriteriaType.GT, 20))
+                )
+                .build();
+        log.info("sql: \n{}", build.getSql());
+        log.info("param: {}", build.getParam());
+    }
+
+    @Test(expected = SqlBuildException.class)
+    public void testUnionError() {
+        SelectBuilder sql1 = SelectBuilder.of()
+                .table("user2")
+                .addField("name")
+                .addField("date")
+                .where(DbCriteria.of("id", DbCriteriaType.GT, 20));
+        SelectBuilder sql2 = SelectBuilder.of()
+                .table("user u")
+                .addField("name")
+                .addField("date")
+                .where(DbCriteria.of("u.id", DbCriteriaType.EQ, 10))
+                .unionAll(sql1);
+        sql1.union(sql2);
+
+        SqlResult build = sql2.build();
+        log.info("sql: \n{}", build.getSql());
+        log.info("param: {}", build.getParam());
+    }
+
 }

@@ -4,10 +4,7 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,6 +22,8 @@ public class SelectBuilder extends AbstractBuilder {
     private DbSort sort;
     private Integer pageIndex;
     private Integer pageSize;
+    private boolean unionAll;
+    private SelectBuilder union;
 
 
     public SelectBuilder table(String table) {
@@ -125,26 +124,60 @@ public class SelectBuilder extends AbstractBuilder {
         return this;
     }
 
+    public SelectBuilder unionAll(SelectBuilder union) {
+        return this.union(union, true);
+    }
+
+    public SelectBuilder union(SelectBuilder union) {
+        return this.union(union, false);
+    }
+
+    public SelectBuilder union(SelectBuilder union, boolean unionAll) {
+        if (union == null)
+            throw SqlBuildException.of("UNION 不能为 null");
+        this.union = union;
+        this.unionAll = unionAll;
+        return this;
+    }
+
 
     @Override
     public SqlResult build() {
+        this.validateEmbed();
+
         Map<String, Object> param = new LinkedHashMap<>();
         StringBuilder sql = new StringBuilder(100);
 
         sql.append("SELECT").append(BR);
         this.appendField(sql);
         sql.append("FROM ").append(super.validateTable()).append(BR);
-        this.appendJoin(SELECT_JOIN_SIGN, param, sql);
-        super.appendWhere(SELECT_WHERE_SIGN, param, sql);
+        this.appendJoin(paramSign + SELECT_JOIN_SIGN, param, sql);
+        super.appendWhere(paramSign + SELECT_WHERE_SIGN, param, sql);
         this.appendGroup(sql);
         this.appendSort(sql);
         this.appendPage(param, sql);
+        this.appendUnion(param, sql);
 
         log.debug("build-sql: \n{}", sql);
         log.debug("build-param: {}", param);
         return new SqlResult(sql.toString(), param);
     }
 
+
+    private void validateEmbed() {
+        Set<SelectBuilder> sql = new HashSet<>();
+        sql.add(this);
+        SelectBuilder temp = this.union;
+        while (temp != null) {
+            if (sql.contains(temp))
+                throw SqlBuildException.of("UNION 存在重复嵌套");
+            sql.add(temp);
+            temp = temp.union;
+        }
+
+        if (where != null)
+            where.validateEmbed();
+    }
 
     private void appendField(StringBuilder sql) {
         if (fields.isEmpty()) {
@@ -181,5 +214,18 @@ public class SelectBuilder extends AbstractBuilder {
         param.put("pageStart", this.pageIndex() * this.validatePageSize());
         param.put("pageSize", this.validatePageSize());
     }
+
+    private void appendUnion(Map<String, Object> param, StringBuilder sql) {
+        if (union == null)
+            return;
+        String sign = unionAll ? "UNION ALL" : "UNION";
+        if (sql.lastIndexOf(BR) < sql.length() - BR.length())
+            sql.append(BR);
+        sql.append(sign).append(BR);
+        SqlResult res = union.paramSign(SUB_SQL_SIGN).build();
+        sql.append(res.sql);
+        param.putAll(res.param);
+    }
+
 
 }

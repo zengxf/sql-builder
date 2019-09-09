@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class AbstractBuilder implements SqlConstant {
 
+    protected int paramSign;
     protected String table;
     protected List<DbJoin> joins = new ArrayList<>(2);
     protected DbCriteriaGroup where;
@@ -19,6 +20,10 @@ public abstract class AbstractBuilder implements SqlConstant {
 
     public abstract SqlResult build();
 
+    protected AbstractBuilder paramSign(int paramSign) {
+        this.paramSign = paramSign;
+        return this;
+    }
 
     protected void setTable(String table) {
         this.table = table;
