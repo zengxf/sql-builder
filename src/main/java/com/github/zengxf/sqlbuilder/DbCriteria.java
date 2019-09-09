@@ -49,6 +49,10 @@ public class DbCriteria {
         return of(field, BETWEEN, param1, param2);
     }
 
+    public static DbCriteria between(String field, Object[] params) {
+        return of(field, BETWEEN, params);
+    }
+
     public static DbCriteria isNull(String field) {
         return of(field, IS_NULL);
     }
