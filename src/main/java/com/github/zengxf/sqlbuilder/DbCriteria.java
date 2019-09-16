@@ -41,6 +41,10 @@ public class DbCriteria {
         return of(field, NE, param);
     }
 
+    public static DbCriteria in(String field, Object param) {
+        return of(field, IN, param);
+    }
+
     public static DbCriteria like(String field, Object param) {
         return of(field, LIKE, param);
     }

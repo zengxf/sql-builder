@@ -5,8 +5,6 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by zengxf on 2019/9/9.
  */
@@ -23,6 +21,15 @@ public class TestDbCriteriaGroup {
                 .addGroup(g1);
         g2.validateEmbed();
         log.info("where: \n{}", g2.toSql(0, new HashMap<>()));
+    }
+
+    @Test
+    public void testIn() {
+        DbCriteriaGroup g1 = DbCriteriaGroup.ofAnd()
+                .addItem(DbCriteria.of("user.id", DbCriteriaType.IN, 10));
+        HashMap<String, Object> param = new HashMap<>();
+        log.info("where: \n{}", g1.toSql(0, param));
+        log.info("param: \n{}", param);
     }
 
     @Test(expected = SqlBuildException.class)

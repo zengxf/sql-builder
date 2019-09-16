@@ -14,6 +14,7 @@ public enum DbCriteriaType {
     GTE(">= %s"),
     EQ("= %s"),
     NE("!= %s"),
+    IN("IN (%s)"),
     LIKE("LIKE '%%' %s '%%'"), // 例："LIKE '%' :username '%'"；`:username` 两边一定要有空格
     LLIKE("LIKE '%%' %s"), // 左边模糊查询
     RLIKE("LIKE %s '%%'"), // 右边模糊查询
