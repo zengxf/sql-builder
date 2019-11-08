@@ -49,6 +49,14 @@ public class DbCriteria {
         return of(field, LIKE, param);
     }
 
+    public static DbCriteria likeCi(String field, Object param1, Object param2) {
+        return of(field, LIKE_CI, param1, param2);
+    }
+
+    public static DbCriteria likeCiU8(String field, Object param) {
+        return of(field, LIKE_CI_U8, param);
+    }
+
     public static DbCriteria between(String field, Object param1, Object param2) {
         return of(field, BETWEEN, param1, param2);
     }
