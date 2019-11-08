@@ -79,7 +79,7 @@ public class TestSelectBuilder {
                 .where(DbCriteriaGroup.ofAnd()
                         .addItem(DbCriteria.of("id", DbCriteriaType.EQ, 10))
                         .addItem(DbCriteria.of("id", DbCriteriaType.EQ, 10))
-                        .addItem(DbCriteria.of("name", DbCriteriaType.LIKE, "test"))
+                        .addItem(DbCriteria.of("name", DbCriteriaType.LIKE_CI_U8, "test"))
                 )
                 .build();
         log.info("sql: \n{}", build.getSql());

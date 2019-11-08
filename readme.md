@@ -258,6 +258,28 @@ FROM user
 [main] INFO TestDeleteBuilder - param: {order.status_8000=1, user.id_7000=10, user.name_7000=test}
 ```
 
+### INSERT
+- Java Code
+```
+SqlResult build = InsertBuilder.of()
+        .table("user")
+        .addValue("name", "zxf")
+        .addValue("age", 22)
+        .addLiteralValue("status", "1")
+        .addLiteralValue("sign", "'test'")
+        .build();
+log.info("sql: \n{}", build.getSql());
+log.info("param: {}", build.getParam());
+```
+- 输出
+```
+[main] INFO TestInsertBuilder - sql: 
+INSERT INTO user(name, age, status, sign)
+VALUE(:name, :age, 1, 'test')
+
+[main] INFO TestInsertBuilder - param: {name=zxf, age=22}
+```
+
 
 ## TODO
 - [x] DELETE

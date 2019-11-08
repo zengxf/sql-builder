@@ -22,8 +22,7 @@ public class DeleteBuilder extends AbstractBuilder {
 
 
     public DeleteBuilder table(String table) {
-        super.table = table;
-        this.validateTable();
+        super.setTable(table);
         return this;
     }
 

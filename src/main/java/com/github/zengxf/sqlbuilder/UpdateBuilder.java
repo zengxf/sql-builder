@@ -22,8 +22,7 @@ public class UpdateBuilder extends AbstractBuilder {
 
 
     public UpdateBuilder table(String table) {
-        super.table = table;
-        this.validateTable();
+        super.setTable(table);
         return this;
     }
 
