@@ -12,18 +12,18 @@ implementation group: 'com.github.zengxf', name: 'sql-builder', version: '1.0.0'
 
 ### 使用 NamedParameterJdbcTemplate
 ```
-SqlResult sql = SelectBuilder.of()
+SqlResult sqlRes = SelectBuilder.of()
         .table("note_review")
         .addField("DATE_FORMAT(review_date, '%Y-%m-%d')", "dt")
         .where(DbCriteriaGroup.ofAnd()
-                .addItem(DbCriteria.of("user_id", DbCriteriaType.EQ, userId))
+                .addItem(DbCriteria.of("user_id", DbCriteriaType.EQ, 888))
                 .addItem(DbCriteria.of("status", DbCriteriaType.EQ, NoteReviewStatusEnum.INITIAL.code))
                 .addItem(DbCriteria.of("review_date", DbCriteriaType.BETWEEN, DateUtils.lastMonth()))
         )
         .addSort(new Sort(Sort.Direction.DESC, "dt"))
         .page(0, 1)
         .build();
-List<String> list = super.namedJdbc.queryForList(sql.getSql(), sql.getParam(), String.class);
+List<String> list = namedJdbc.queryForList(sqlRes.getSql(), sqlRes.getParam(), String.class);
 return ListUtils.one(list);
 ```
 
