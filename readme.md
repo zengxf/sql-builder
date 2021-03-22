@@ -5,6 +5,11 @@
   - JDK：11
 
 ## 示例
+### 依赖
+```Gradle
+implementation group: 'com.github.zengxf', name: 'sql-builder', version: '1.0.0'
+```
+
 ### 使用 NamedParameterJdbcTemplate
 ```
 SqlResult sql = SelectBuilder.of()
